@@ -4,7 +4,8 @@
   "description": "Utility for finding differences in configuration files",
   "type": "project",
   "require": {
-      "docopt/docopt": "^1.0"
+      "docopt/docopt": "^1.0",
+      "funct/funct": "*"
   },
   "require-dev": {
       "squizlabs/php_codesniffer": "^3.0"
@@ -18,5 +19,11 @@
   ],
   "scripts": {
       "phpcs": "phpcs"
+  },
+  "autoload": {
+    "files": [
+      "src/common.php",
+      "src/diffFinder.php"
+    ]
   }
 }
