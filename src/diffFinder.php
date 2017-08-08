@@ -13,8 +13,8 @@ function findDiff($firstFile, $secondFile)
     $diffArray1 = array_diff_assoc($firstFileArray, $secondFileArray);
     $diffArray2 = array_diff_assoc($secondFileArray, $firstFileArray);
 
-    $resultArray = mergeDiff($resultArray, $diffArray1, '+');
-    $resultArray = mergeDiff($resultArray, $diffArray2, '-');
+    $resultArray = mergeDiff($resultArray, $diffArray1, '-');
+    $resultArray = mergeDiff($resultArray, $diffArray2, '+');
     $resultArray = mergeDiff($resultArray, $intersection, ' ');
 
     uksort($resultArray, "\DiffFinder\cmp");
@@ -48,6 +48,11 @@ function cmp($key1, $key2)
 function arrayToText($array)
 {
     return implode("\n", array_map(function ($key, $value) {
+        if ($value === true) {
+            $value = 'true';
+        } elseif ($value === false) {
+            $value = 'false';
+        }
         return "  $key: $value";
     }, array_keys($array), $array));
 }
