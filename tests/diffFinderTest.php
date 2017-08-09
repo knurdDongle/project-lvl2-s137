@@ -13,8 +13,8 @@ class DiffFinderTest extends \PHPUnit_Framework_TestCase
   - timeout: 50
   + timeout: 20
   + verbose: true
-}"
-;
+}
+";
         $this->assertEquals("$findDiffResult", \DiffFinder\findDiff('tests/before.json', 'tests/after.json'));
     }
 }
