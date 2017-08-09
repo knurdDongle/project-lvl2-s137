@@ -21,7 +21,7 @@ function findDiff($firstFile, $secondFile)
 
     $resultString = arrayToText($resultArray);
 
-    printResultString($resultString);
+    return resultString($resultString);
 }
 
 
@@ -58,7 +58,7 @@ function arrayToText($array)
 }
 
 
-function printResultString($resultString)
+function resultString($resultString)
 {
-    echo "{\n".$resultString."\n}\n";
+    return "{\n".$resultString."\n}\n";
 }
