@@ -1,8 +1,6 @@
 <?php
 namespace Diff\Tests;
 
-//use \PHPUnit\Framework\TestCase;
-
 class DiffFinderTest extends \PHPUnit_Framework_TestCase
 {
     public function testFindDiff()
@@ -15,6 +13,6 @@ class DiffFinderTest extends \PHPUnit_Framework_TestCase
   + verbose: true
 }
 ";
-        $this->assertEquals("$findDiffResult", \DiffFinder\findDiff('fixtures/before.json', 'fixtures/after.json'));
+        $this->assertEquals("$findDiffResult", \DiffFinder\findDiff('tests/fixtures/before.json', 'tests/fixtures/after.json'));
     }
 }
