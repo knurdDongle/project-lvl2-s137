@@ -3,7 +3,7 @@ namespace Tests;
 
 use \PHPUnit\Framework\TestCase;
 
-class DiffFinderTest extends TestCase
+class DiffFinderTest extends \PHPUnit_Framework_TestCase
 {
     public function testDiffFinder()
     {
