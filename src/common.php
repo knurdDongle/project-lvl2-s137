@@ -23,6 +23,7 @@ function startGenDiff()
     if ($args['<firstFile>']) {
         $firstFile = $args['<firstFile>'];
         $secondFile = $args['<secondFile>'];
-        \DiffFinder\findDiff($firstFile, $secondFile);
+        $result = \DiffFinder\findDiff($firstFile, $secondFile);
+        echo $result;
     }
 }
