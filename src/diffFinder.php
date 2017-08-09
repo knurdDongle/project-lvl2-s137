@@ -13,17 +13,17 @@ function findDiff($firstFile, $secondFile)
         if (array_key_exists($key, $secondFileArray) && array_key_exists($key, $firstFileArray)) {
             if ($secondFileArray[$key] == $firstFileArray[$key]) {
                 $value = boolToText($secondFileArray[$key]);
-                return "  $key: $value";
+                return "    $key: $value";
             }
             $value1 = boolToText($secondFileArray[$key]);
             $value2 = boolToText($firstFileArray[$key]);
-            return "+ $key: $value1\n- $key: $value2";
+            return "  + $key: $value1\n  - $key: $value2";
         } elseif (array_key_exists($key, $secondFileArray) && !array_key_exists($key, $firstFileArray)) {
             $value = boolToText($secondFileArray[$key]);
-            return "+ $key: $value";
+            return "  + $key: $value";
         }
         $value = boolToText($firstFileArray[$key]);
-        return "- $key: $value";
+        return "  - $key: $value";
     }, array_keys($unionArrays));
 
 
