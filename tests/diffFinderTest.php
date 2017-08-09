@@ -1,5 +1,5 @@
 <?php
-namespace Tests;
+namespace Diff\Tests;
 
 //use \PHPUnit\Framework\TestCase;
 
@@ -15,6 +15,6 @@ class DiffFinderTest extends \PHPUnit_Framework_TestCase
   + verbose: true
 }
 ";
-        $this->assertEquals("$findDiffResult", \DiffFinder\findDiff('tests/before.json', 'tests/after.json'));
+        $this->assertEquals("$findDiffResult", \DiffFinder\findDiff('fixtures/before.json', 'fixtures/after.json'));
     }
 }
