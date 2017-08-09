@@ -9,9 +9,9 @@ class DiffFinderTest extends \PHPUnit_Framework_TestCase
     {
         $findDiffResult = "{
     host: hexlet.io
-  - proxy: 123.234.53.22
-  - timeout: 50
   + timeout: 20
+  - timeout: 50
+  - proxy: 123.234.53.22
   + verbose: true
 }
 ";
