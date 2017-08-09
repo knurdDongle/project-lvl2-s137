@@ -22,7 +22,6 @@ function findDiff($firstFile, $secondFile)
     $resultString = arrayToText($resultArray);
 
     printResultString($resultString);
-    return $resultString;
 }
 
 
