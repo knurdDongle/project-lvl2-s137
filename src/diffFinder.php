@@ -7,58 +7,45 @@ function findDiff($firstFile, $secondFile)
     $firstFileArray = json_decode(file_get_contents($firstFile), true);
     $secondFileArray = json_decode(file_get_contents($secondFile), true);
 
-    $resultArray = [];
+    $c = \Funct\Collection\union($firstFileArray, $secondFileArray);
 
-    $intersection = array_intersect_assoc($firstFileArray, $secondFileArray);
-    $diffArray1 = array_diff_assoc($firstFileArray, $secondFileArray);
-    $diffArray2 = array_diff_assoc($secondFileArray, $firstFileArray);
+    $resultArray = array_map(function ($key) use ($secondFileArray, $firstFileArray, $c) {
+        if (array_key_exists($key, $secondFileArray) && array_key_exists($key, $firstFileArray)) {
+            if ($secondFileArray[$key] == $firstFileArray[$key]) {
+                $value = boolToText($secondFileArray[$key]);
+                return "  $key: $value";
+            } else {
+                $value1 = boolToText($secondFileArray[$key]);
+                $value2 = boolToText($firstFileArray[$key]);
+                return "+ $key: $value1\n- $key: $value2";
+            }
+        } elseif (array_key_exists($key, $secondFileArray) && !array_key_exists($key, $firstFileArray)) {
+            $value = boolToText($secondFileArray[$key]);
+            return "+ $key: $value";
+        } else {
+            $value = boolToText($firstFileArray[$key]);
+            return "- $key: $value";
+        }
+    }, array_keys($c));
 
-    $resultArray = mergeDiff($resultArray, $diffArray1, '-');
-    $resultArray = mergeDiff($resultArray, $diffArray2, '+');
-    $resultArray = mergeDiff($resultArray, $intersection, ' ');
 
-    uksort($resultArray, "\DiffFinder\cmp");
-
-    $resultString = arrayToText($resultArray);
-
-    return resultString($resultString);
+    return arrayToText($resultArray);
 }
 
 
-function mergeDiff($res, $diff, $sign)
+function boolToText($key)
 {
-    foreach ($diff as $key => $value) {
-        $res["$sign $key"] = $value;
+    if ($key === true) {
+        return 'true';
+    } elseif ($key === false) {
+        return 'false';
     }
-    return $res;
-}
-
-
-function cmp($key1, $key2)
-{
-    $key1 = strstr($key1, ' ');
-    $key2 = strstr($key2, ' ');
-    if ($key1 == $key2) {
-        return 0;
-    }
-    return ($key1 < $key2) ? -1 : 1;
+    return $key;
 }
 
 
 function arrayToText($array)
 {
-    return implode("\n", array_map(function ($key, $value) {
-        if ($value === true) {
-            $value = 'true';
-        } elseif ($value === false) {
-            $value = 'false';
-        }
-        return "  $key: $value";
-    }, array_keys($array), $array));
-}
-
-
-function resultString($resultString)
-{
-    return "{\n".$resultString."\n}\n";
+    $result = implode("\n", $array);
+    return "{\n$result\n}\n";
 }
