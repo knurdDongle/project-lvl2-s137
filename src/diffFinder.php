@@ -9,7 +9,7 @@ function findDiff($firstFile, $secondFile)
 
     $unionArrays = \Funct\Collection\union($firstFileArray, $secondFileArray);
 
-    $resultArray = array_map(function ($key) use ($secondFileArray, $firstFileArray, $unionArrays) {
+    $resultArray = array_map(function ($key) use ($secondFileArray, $firstFileArray) {
         if (array_key_exists($key, $secondFileArray) && array_key_exists($key, $firstFileArray)) {
             if ($secondFileArray[$key] == $firstFileArray[$key]) {
                 $value = boolToText($secondFileArray[$key]);
