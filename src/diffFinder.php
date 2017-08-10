@@ -6,12 +6,13 @@ use Symfony\Component\Yaml\Yaml;
 
 function findDiff($firstFile, $secondFile)
 {
+
     $firstFileArray = fileDataToArray($firstFile);
     $secondFileArray = fileDataToArray($secondFile);
 
-    $unionArrays = \Funct\Collection\union($firstFileArray, $secondFileArray);
+    $unionArraysKeys = \Funct\Collection\union(array_keys($firstFileArray), array_keys($secondFileArray));
 
-    $resultArray = arrayDiff($firstFileArray, $secondFileArray, $unionArrays);
+    $resultArray = arrayDiff($firstFileArray, $secondFileArray, $unionArraysKeys);
 
     return arrayToText($resultArray);
 }
@@ -35,7 +36,7 @@ function arrayToText($array)
 }
 
 
-function arrayDiff($firstArray, $secondArray, $unionArrays)
+function arrayDiff($firstArray, $secondArray, $unionArraysKeys)
 {
     return array_map(function ($key) use ($secondArray, $firstArray) {
         if (array_key_exists($key, $secondArray) && array_key_exists($key, $firstArray)) {
@@ -52,7 +53,7 @@ function arrayDiff($firstArray, $secondArray, $unionArrays)
         }
         $value = boolToText($firstArray[$key]);
         return "  - $key: $value";
-    }, array_keys($unionArrays));
+    }, $unionArraysKeys);
 }
 
 
@@ -72,3 +73,4 @@ function yamlParseAdapter($file)
 {
     return Yaml::parse(file_get_contents($file));
 }
+
