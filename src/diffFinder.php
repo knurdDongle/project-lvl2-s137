@@ -61,8 +61,14 @@ function fileDataToArray($file)
     $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
 
     if ($fileExtension === 'json') {
-        print_r(json_decode(file_get_contents($file), true));
+        return json_decode(file_get_contents($file), true);
     } elseif ($fileExtension === 'yml') {
-        return Yaml::parse(file_get_contents($file));
+        return yamlParseAdapter($file);
     }
+}
+
+
+function yamlParseAdapter($file)
+{
+    return Yaml::parse(file_get_contents($file));
 }
