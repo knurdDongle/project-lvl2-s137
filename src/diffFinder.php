@@ -4,8 +4,8 @@ namespace DiffFinder;
 
 function findDiff($firstFile, $secondFile)
 {
-    $firstFileArray = json_decode(file_get_contents($firstFile), true);
-    $secondFileArray = json_decode(file_get_contents($secondFile), true);
+    $firstFileArray = fileDataToArray($firstFile);
+    $secondFileArray = fileDataToArray($secondFile);
 
     $unionArrays = \Funct\Collection\union($firstFileArray, $secondFileArray);
 
@@ -51,4 +51,16 @@ function arrayDiff($firstArray, $secondArray, $unionArrays)
         $value = boolToText($firstArray[$key]);
         return "  - $key: $value";
     }, array_keys($unionArrays));
+}
+
+
+function fileDataToArray($file)
+{
+    $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
+
+    if ($fileExtension === 'json') {
+        return json_decode(file_get_contents($file), true);
+    } elseif ($file === 'yml') {
+        return ;
+    }
 }

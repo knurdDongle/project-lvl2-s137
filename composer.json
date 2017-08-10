@@ -5,7 +5,8 @@
   "type": "project",
   "require": {
       "docopt/docopt": "^1.0",
-      "funct/funct": "*"
+      "funct/funct": "*",
+      "symfony/yaml": "*"
   },
   "require-dev": {
       "phpunit/phpunit": "*",
