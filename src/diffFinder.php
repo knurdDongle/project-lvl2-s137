@@ -2,6 +2,8 @@
 
 namespace DiffFinder;
 
+use Symfony\Component\Yaml\Yaml;
+
 function findDiff($firstFile, $secondFile)
 {
     $firstFileArray = fileDataToArray($firstFile);
@@ -59,8 +61,8 @@ function fileDataToArray($file)
     $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
 
     if ($fileExtension === 'json') {
-        return json_decode(file_get_contents($file), true);
-    } elseif ($file === 'yml') {
-        return ;
+        print_r(json_decode(file_get_contents($file), true));
+    } elseif ($fileExtension === 'yml') {
+        return Yaml::parse(file_get_contents($file));
     }
 }
