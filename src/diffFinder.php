@@ -46,7 +46,7 @@ function arraysDiff($array1, $array2, $unionArraysKeys)
 
 function arrayToText($array)
 {
-    $result = implode("\n", array_map(function ($key , $value) {
+    $result = implode("\n", array_map(function ($key, $value) {
         $value = boolToText($value);
         return "$key: $value";
     }, array_keys($array), $array));
