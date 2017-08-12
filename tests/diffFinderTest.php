@@ -3,7 +3,7 @@ namespace Diff\Tests;
 
 class DiffFinderTest extends \PHPUnit_Framework_TestCase
 {
-    public function testFindDiffJSON()
+    public function testFindDiff()
     {
         $findDiffResult = "{
     host: hexlet.io
@@ -13,20 +13,9 @@ class DiffFinderTest extends \PHPUnit_Framework_TestCase
   + verbose: true
 }
 ";
-        $this->assertEquals("$findDiffResult", \DiffFinder\findDiff('tests/fixtures/before.json', 'tests/fixtures/after.json'));
-    }
+        $array1 = ['host' => 'hexlet.io', 'timeout' => 50, 'proxy' => '123.234.53.22'];
+        $array2 = ['timeout' => 20, 'verbose' => true, 'host' => 'hexlet.io'];
 
-
-    public function testFindDiffYAML()
-    {
-        $findDiffResult = "{
-    host: hexlet.io
-  + timeout: 20
-  - timeout: 50
-  - proxy: 123.234.53.22
-  + verbose: true
-}
-";
-        $this->assertEquals("$findDiffResult", \DiffFinder\findDiff('tests/fixtures/before.yml', 'tests/fixtures/after.yml'));
+        $this->assertEquals("$findDiffResult", \DiffFinder\findDiff($array1, $array2));
     }
 }

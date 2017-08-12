@@ -30,6 +30,9 @@ function startGenDiff()
         $firstFileArray = fileDataToArray($firstFile);
         $secondFileArray = fileDataToArray($secondFile);
 
+        print_r($firstFileArray);
+        print_r($secondFileArray);
+
         $result = \DiffFinder\findDiff($firstFileArray, $secondFileArray);
         echo $result;
     }
