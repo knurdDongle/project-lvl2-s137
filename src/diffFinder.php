@@ -56,7 +56,7 @@ function arrayToText($array, $spaces = '')
         return "$spaces$key: $value";
     }, array_keys($array), $array));
 
-    return "{\n$result\n}";
+    return "{\n$result\n}\n";
 }
 
 /*
