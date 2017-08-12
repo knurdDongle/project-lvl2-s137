@@ -6,7 +6,7 @@ use function \Funct\Collection\union;
 
 function findDiff($array1, $array2)
 {
-    $resultArray = arraysDiff2($array1, $array2);
+    $resultArray = arraysDiff($array1, $array2);
 
     return arrayToText($resultArray);
 }
@@ -22,7 +22,7 @@ function boolToText($key)
     return $key;
 }
 
-/*
+
 function arraysDiff($array1, $array2)
 {
     $unionArraysKeys = union(array_keys($array1), array_keys($array2));
@@ -43,7 +43,7 @@ function arraysDiff($array1, $array2)
         $acc["  - $key"] = $array1[$key];
         return $acc;
     }, []);
-}*/
+}
 
 
 function arrayToText($array, $spaces = '')
@@ -56,7 +56,7 @@ function arrayToText($array, $spaces = '')
     return "{\n$result\n}";
 }
 
-
+/*
 function arraysDiff2($array1, $array2)
 {
     $unionArraysKeys = union(array_keys($array1), array_keys($array2));
@@ -95,4 +95,4 @@ function arraysDiff2($array1, $array2)
 function arrayToJSON($array)
 {
     return json_encode($array, JSON_PRETTY_PRINT);
-}
+}*/

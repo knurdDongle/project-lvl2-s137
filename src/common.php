@@ -2,11 +2,14 @@
 
 namespace DiffFinder\common;
 
-function startGenDiff($firstFile, $secondFile)
+function startGenDiff($file1, $file2)
 {
-    $firstFileArray = \DiffFinder\parser\fileDataToArray($firstFile);
-    $secondFileArray = \DiffFinder\parser\fileDataToArray($secondFile);
+    $file1Extension = pathinfo($file1, PATHINFO_EXTENSION);
+    $file2Extension = pathinfo($file2, PATHINFO_EXTENSION);
 
-    $result = \DiffFinder\diff\findDiff($firstFileArray, $secondFileArray);
+    $fileArray1 = \DiffFinder\parser\dataToArray(file_get_contents($file1), $file1Extension);
+    $fileArray2 = \DiffFinder\parser\dataToArray(file_get_contents($file2), $file2Extension);
+
+    $result = \DiffFinder\diff\findDiff($fileArray1, $fileArray2);
     echo $result;
 }
