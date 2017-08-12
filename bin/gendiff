@@ -29,5 +29,5 @@ if ($args['<firstFile>']) {
     $firstFile = $args['<firstFile>'];
     $secondFile = $args['<secondFile>'];
 
-    \RunDiff\startGenDiff($firstFile, $secondFile);
+    \DiffFinder\common\startGenDiff($firstFile, $secondFile);
 }

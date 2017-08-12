@@ -1,12 +1,12 @@
 <?php
 
-namespace RunDiff;
+namespace DiffFinder\common;
 
 function startGenDiff($firstFile, $secondFile)
 {
-    $firstFileArray = \ParseFiles\fileDataToArray($firstFile);
-    $secondFileArray = \ParseFiles\fileDataToArray($secondFile);
+    $firstFileArray = \DiffFinder\parser\fileDataToArray($firstFile);
+    $secondFileArray = \DiffFinder\parser\fileDataToArray($secondFile);
 
-    $result = \DiffFinder\findDiff($firstFileArray, $secondFileArray);
+    $result = \DiffFinder\diff\findDiff($firstFileArray, $secondFileArray);
     echo $result;
 }

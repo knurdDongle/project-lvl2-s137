@@ -1,6 +1,6 @@
 <?php
 
-namespace DiffFinder;
+namespace DiffFinder\diff;
 
 use function \Funct\Collection\union;
 

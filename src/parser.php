@@ -1,6 +1,6 @@
 <?php
 
-namespace ParseFiles;
+namespace DiffFinder\parser;
 
 use Symfony\Component\Yaml\Yaml;
 
