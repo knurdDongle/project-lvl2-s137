@@ -46,7 +46,7 @@ function arraysDiff($array1, $array2)
 }
 
 
-function arrayToText($array, $spaces='')
+function arrayToText($array, $spaces = '')
 {
     $result = implode("\n", array_map(function ($key, $value) use ($spaces) {
 //        if (is_array($value)) {
