@@ -26,7 +26,8 @@
   "autoload": {
     "files": [
       "src/common.php",
-      "src/diffFinder.php"
+      "src/diffFinder.php",
+      "src/parser.php"
     ]
   }
 }

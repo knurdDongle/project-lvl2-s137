@@ -1,8 +1,6 @@
 <?php
 
-namespace Common;
-
-use Symfony\Component\Yaml\Yaml;
+namespace RunDiff;
 
 const DOC = <<<DOC
 Generate diff
@@ -27,28 +25,10 @@ function startGenDiff()
         $firstFile = $args['<firstFile>'];
         $secondFile = $args['<secondFile>'];
 
-        $firstFileArray = fileDataToArray($firstFile);
-        $secondFileArray = fileDataToArray($secondFile);
+        $firstFileArray = \ParseFiles\fileDataToArray($firstFile);
+        $secondFileArray = \ParseFiles\fileDataToArray($secondFile);
 
         $result = \DiffFinder\findDiff($firstFileArray, $secondFileArray);
         echo $result;
     }
-}
-
-
-function fileDataToArray($file)
-{
-    $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
-
-    if ($fileExtension === 'json') {
-        return json_decode(file_get_contents($file), true);
-    } elseif ($fileExtension === 'yml') {
-        return yamlParse($file);
-    }
-}
-
-
-function yamlParse($file)
-{
-    return Yaml::parse(file_get_contents($file));
 }
