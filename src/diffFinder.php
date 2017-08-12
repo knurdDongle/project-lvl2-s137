@@ -2,17 +2,11 @@
 
 namespace DiffFinder;
 
-use Symfony\Component\Yaml\Yaml;
-
-function findDiff($firstFile, $secondFile)
+function findDiff($firstFileArray, $secondFileArray)
 {
-
-    $firstFileArray = fileDataToArray($firstFile);
-    $secondFileArray = fileDataToArray($secondFile);
-
     $unionArraysKeys = \Funct\Collection\union(array_keys($firstFileArray), array_keys($secondFileArray));
 
-    $resultArray = arrayDiff($firstFileArray, $secondFileArray, $unionArraysKeys);
+    $resultArray = arraysDiff($firstFileArray, $secondFileArray, $unionArraysKeys);
 
     return arrayToText($resultArray);
 }
@@ -29,48 +23,33 @@ function boolToText($key)
 }
 
 
+function arraysDiff($array1, $array2, $unionArraysKeys)
+{
+    return array_reduce($unionArraysKeys, function ($acc, $key) use ($array1, $array2) {
+        if (array_key_exists($key, $array1) && array_key_exists($key, $array2)) {
+            if ($array1[$key] === $array2[$key]) {
+                $acc["    $key"] = $array1[$key];
+                return $acc;
+            }
+            $acc["  + $key"] = $array2[$key];
+            $acc["  - $key"] = $array1[$key];
+            return $acc;
+        } elseif (array_key_exists($key, $array2) && !array_key_exists($key, $array1)) {
+            $acc["  + $key"] = $array2[$key];
+            return $acc;
+        }
+        $acc["  - $key"] = $array1[$key];
+        return $acc;
+    }, []);
+}
+
+
 function arrayToText($array)
 {
-    $result = implode("\n", $array);
+    $result = implode("\n", array_map(function ($key , $value) {
+        $value = boolToText($value);
+        return "$key: $value";
+    }, array_keys($array), $array));
+
     return "{\n$result\n}\n";
 }
-
-
-function arrayDiff($firstArray, $secondArray, $unionArraysKeys)
-{
-    return array_map(function ($key) use ($secondArray, $firstArray) {
-        if (array_key_exists($key, $secondArray) && array_key_exists($key, $firstArray)) {
-            if ($secondArray[$key] == $firstArray[$key]) {
-                $value = boolToText($secondArray[$key]);
-                return "    $key: $value";
-            }
-            $value1 = boolToText($secondArray[$key]);
-            $value2 = boolToText($firstArray[$key]);
-            return "  + $key: $value1\n  - $key: $value2";
-        } elseif (array_key_exists($key, $secondArray) && !array_key_exists($key, $firstArray)) {
-            $value = boolToText($secondArray[$key]);
-            return "  + $key: $value";
-        }
-        $value = boolToText($firstArray[$key]);
-        return "  - $key: $value";
-    }, $unionArraysKeys);
-}
-
-
-function fileDataToArray($file)
-{
-    $fileExtension = pathinfo($file, PATHINFO_EXTENSION);
-
-    if ($fileExtension === 'json') {
-        return json_decode(file_get_contents($file), true);
-    } elseif ($fileExtension === 'yml') {
-        return yamlParseAdapter($file);
-    }
-}
-
-
-function yamlParseAdapter($file)
-{
-    return Yaml::parse(file_get_contents($file));
-}
-
