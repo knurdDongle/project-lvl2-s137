@@ -27,7 +27,8 @@
     "files": [
       "src/common.php",
       "src/diffFinder.php",
-      "src/parser.php"
+      "src/parser.php",
+      "src/output.php"
     ]
   }
 }
