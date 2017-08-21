@@ -23,42 +23,8 @@ function boolToText($key)
     return $key;
 }
 
-/*
-function arraysDiff($array1, $array2)
-{
-    $unionArraysKeys = union(array_keys($array1), array_keys($array2));
 
-    return array_reduce($unionArraysKeys, function ($acc, $key) use ($array1, $array2) {
-        if (array_key_exists($key, $array1) && array_key_exists($key, $array2)) {
-            if ($array1[$key] === $array2[$key]) {
-                $acc["    $key"] = $array1[$key];
-                return $acc;
-            }
-            $acc["  + $key"] = $array2[$key];
-            $acc["  - $key"] = $array1[$key];
-            return $acc;
-        } elseif (array_key_exists($key, $array2) && !array_key_exists($key, $array1)) {
-            $acc["  + $key"] = $array2[$key];
-            return $acc;
-        }
-        $acc["  - $key"] = $array1[$key];
-        return $acc;
-    }, []);
-}
-
-
-function arrayToText($array)
-{
-    $result = implode("\n", array_map(function ($key, $value) {
-        $value = boolToText($value);
-        return "$key: $value";
-    }, array_keys($array), $array));
-
-    return "{\n$result\n}";
-}*/
-
-
-function arraysDiff2($array1, $array2)
+/*function arraysDiff2($array1, $array2)
 {
     $unionArraysKeys = union(array_keys($array1), array_keys($array2));
 
@@ -87,6 +53,41 @@ function arraysDiff2($array1, $array2)
 //            return $acc;
 //        }
         $acc[] = ['key' => $key, 'type' => 'removed', 'from' => $array1[$key], 'to' => null];
+        return $acc;
+    }, []);
+}*/
+
+
+function arraysDiff2($array1, $array2)
+{
+    $unionArraysKeys = union(array_keys($array1), array_keys($array2));
+
+    return array_reduce($unionArraysKeys, function ($acc, $key) use ($array1, $array2) {
+        if (array_key_exists($key, $array1) && array_key_exists($key, $array2)) {
+            if (is_array($array1[$key]) && is_array($array2[$key])) {
+                if ($array1[$key] === $array2[$key]) {
+                    $acc[] = ['key' => $key, 'isNested' => true, 'changeType' => 'unchanged', 'from' => $array1[$key], 'to' => null];
+                } else {
+                    $acc[] = ['key' => $key, 'isNested' => true, 'changeType' => 'changed', 'from' => arraysDiff2($array1[$key], $array2[$key]), 'to' => null];
+                }
+            } else {
+                if ($array1[$key] === $array2[$key]) {
+                    $acc[] = ['key' => $key, 'isNested' => false, 'changeType' => 'unchanged', 'from' => $array1[$key], 'to' => null];
+                } else {
+                    $acc[] = ['key' => $key, 'isNested' => false, 'changeType' => 'changed', 'from' => $array1[$key], 'to' => $array2[$key]];
+                }
+            }
+        } elseif (array_key_exists($key, $array1)) {
+            if (is_array($array1[$key])) {
+                $acc[] = ['key' => $key, 'isNested' => true, 'changeType' => 'removed', 'from' => $array1[$key], 'to' => null];
+            } else {
+                $acc[] = ['key' => $key, 'isNested' => false, 'changeType' => 'removed', 'from' => $array1[$key], 'to' => null];
+            }
+        } elseif (is_array($array2[$key])) {
+            $acc[] = ['key' => $key, 'isNested' => true, 'changeType' => 'added', 'from' => $array2[$key], 'to' => null];
+        } else {
+            $acc[] = ['key' => $key, 'isNested' => false, 'changeType' => 'added', 'from' => $array2[$key], 'to' => null];
+        }
         return $acc;
     }, []);
 }

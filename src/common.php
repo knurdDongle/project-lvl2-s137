@@ -13,8 +13,8 @@ function startGenDiff($file1, $file2)
     $result = \DiffFinder\diff\findDiff($fileArray1, $fileArray2);
 //    echo $result;
 //    print_r(json_encode($result, JSON_PRETTY_PRINT));
-    print_r("{\n$result}\n");
+//    print_r("{\n$result}\n");
 
-//    print_r(asd($result));
+    print_r($result);
 
 }
