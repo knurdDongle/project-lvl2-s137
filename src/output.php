@@ -123,3 +123,35 @@ function output($AST, $depth = 0)
 
     return "$result";
 }
+
+
+function outputPlain($AST, $parents = '')
+{
+    $result = '';
+
+    foreach ($AST as $array) {
+        if ($array['isNested'] === true) {
+            if ($array['changeType'] === 'changed') {
+                $value = outputPlain($array['from'], "$parents{$array['key']}.");
+                $result .= "{$value}";
+            } elseif ($array['changeType'] === 'removed') {
+                $result .= "Property '{$parents}{$array['key']}' was removed\n";
+            } elseif ($array['changeType'] === 'added') {
+                $result .= "Property '{$parents}{$array['key']}' was added with value: 'complex value'\n";
+            }
+        } else {
+            if ($array['changeType'] === 'changed') {
+                $value1 = boolToText($array['from']);
+                $value2 = boolToText($array['to']);
+                $result .= "Property '{$parents}{$array['key']}' was changed. From {$value1} to {$value2}\n";
+            } elseif ($array['changeType'] === 'removed') {
+                $result .= "Property '{$parents}{$array['key']}' was removed\n";
+            } elseif ($array['changeType'] === 'added') {
+                $value = boolToText($array['from']);
+                $result .= "Property '{$parents}{$array['key']}' was added with value: {$value}\n";
+            }
+        }
+    }
+
+    return "$result";
+}
