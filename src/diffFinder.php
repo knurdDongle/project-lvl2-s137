@@ -8,8 +8,8 @@ function findDiff($array1, $array2)
 {
     $resultArray = arraysDiff3($array1, $array2);
 
-    return $resultArray;
-//    return \DiffFinder\output\output($resultArray);
+//    return $resultArray;
+    return \DiffFinder\output\output($resultArray);
 }
 
 
@@ -101,7 +101,7 @@ function arraysDiff3($array1, $array2)
         if (array_key_exists($key, $array1) && array_key_exists($key, $array2)) {
             if (is_array($array1[$key]) && is_array($array2[$key])) {
                 if ($array1[$key] === $array2[$key]) {
-                    $acc[] = ['key' => $key, 'isNested' => true, 'changeType' => 'unchanged', 'from' => $array1[$key], 'to' => null];
+                    $acc[] = ['key' => $key, 'isNested' => true, 'changeType' => 'unchanged', 'from' => arraysDiff3($array1[$key], $array1[$key]), 'to' => null];
                 } else {
                     $acc[] = ['key' => $key, 'isNested' => true, 'changeType' => 'changed', 'from' => arraysDiff3($array1[$key], $array2[$key]), 'to' => null];
                 }
