@@ -91,41 +91,51 @@ function output($AST, $depth = 0)
         if ($array['isNested'] === true) {
             if ($array['changeType'] === 'unchanged') {
                 $value = output($array['from'], $depth + 1);
-                //$result .= "$spaces  \"{$array['key']}\": {\n{$value}$spaces  }\n";
-                $result .= makeLine($spaces, $array['key'], $value, $spaces."  ");
+                $result .= makeLine(true, $spaces, " ", $array['key'], $value);
             } elseif ($array['changeType'] === 'changed') {
                 $value = output($array['from'], 1);
-                //$result .= "$spaces  \"{$array['key']}\": {\n{$value}$spaces  }\n";
-                $result .= makeLine($spaces, $array['key'], $value, $spaces."  ");
+                $result .= makeLine(true, $spaces, " ", $array['key'], $value);
             } elseif ($array['changeType'] === 'removed') {
                 $value = output($array['from'], $depth + 1);
-                //$result .= "$spaces- \"{$array['key']}\": {\n{$value}$spaces  }\n";
-                $result .= makeLine($spaces, $array['key'], $value, $spaces."  ", "- ");
+                $result .= makeLine(true, $spaces, "-", $array['key'], $value);
             } elseif ($array['changeType'] === 'added') {
                 $value = output($array['from'], $depth + 1);
-                //$result .= "$spaces+ \"{$array['key']}\": {\n{$value}$spaces  }\n";
-                $result .= makeLine($spaces, $array['key'], $value, $spaces."  ", "+ ");
+                $result .= makeLine(true, $spaces, "+", $array['key'], $value);
             }
         } else {
             if ($array['changeType'] === 'unchanged') {
                 $value = boolToText($array['from']);
-                $result .= "$spaces  \"{$array['key']}\": {$value}\n";
+                $result .= makeLine(false, $spaces, " ", $array['key'], $value);
             } elseif ($array['changeType'] === 'changed') {
                 $value1 = boolToText($array['from']);
                 $value2 = boolToText($array['to']);
-                $result .= "$spaces- \"{$array['key']}\": {$value1}\n";
-                $result .= "$spaces+ \"{$array['key']}\": {$value2}\n";
+                $result .= makeLine(false, $spaces, "-", $array['key'], $value1);
+                $result .= makeLine(false, $spaces, "+", $array['key'], $value2);
             } elseif ($array['changeType'] === 'removed') {
                 $value = boolToText($array['from']);
-                $result .= "$spaces- \"{$array['key']}\": {$value}\n";
+                $result .= makeLine(false, $spaces, "-", $array['key'], $value);
             } elseif ($array['changeType'] === 'added') {
                 $value = boolToText($array['from']);
-                $result .= "$spaces+ \"{$array['key']}\": {$value}\n";
+                $result .= makeLine(false, $spaces, "+", $array['key'], $value);
             }
         }
     }
 
     return "$result";
+}
+
+
+function makeLine($isNested, $spaces, $mark, $key, $value)
+{
+    $half1 ="$spaces$mark \"{$key}\": ";
+
+    if ($isNested) {
+        $half2 = "{\n{$value}$spaces  }\n";
+    } else {
+        $half2 = "{$value}\n";
+    }
+
+    return $half1 . $half2;
 }
 
 
@@ -158,10 +168,4 @@ function outputPlain($AST, $parents = '')
     }
 
     return "$result";
-}
-
-
-function makeLine($spaces1, $key, $value, $spaces2, $mark = "  ")
-{
-    return "$spaces1$mark\"$key\": {\n$value$spaces2}\n";
 }
