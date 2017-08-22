@@ -149,76 +149,40 @@ function arraysDiff3($array1, $array2)
         if (array_key_exists($key, $array1) && array_key_exists($key, $array2)) {
             if (is_array($array1[$key]) && is_array($array2[$key])) {
                 if ($array1[$key] === $array2[$key]) {
-                    $acc[] = [
-                        'key' => $key,
-                        'isNested' => true,
-                        'changeType' => 'unchanged',
-                        'from' => arraysDiff3($array1[$key], $array1[$key]),
-                        'to' => null
-                    ];
+                    $acc[] = buildArray($key, true, 'unchanged', arraysDiff3($array1[$key], $array1[$key]), null);
                 } else {
-                    $acc[] = [
-                        'key' => $key,
-                        'isNested' => true,
-                        'changeType' => 'changed',
-                        'from' => arraysDiff3($array1[$key], $array2[$key]),
-                        'to' => null
-                    ];
+                    $acc[] = buildArray($key, true, 'changed', arraysDiff3($array1[$key], $array2[$key]), null);
                 }
             } else {
                 if ($array1[$key] === $array2[$key]) {
-                    $acc[] = [
-                        'key' => $key,
-                        'isNested' => false,
-                        'changeType' => 'unchanged',
-                        'from' => $array1[$key],
-                        'to' => null
-                    ];
+                    $acc[] = buildArray($key, false, 'unchanged', $array1[$key], null);
                 } else {
-                    $acc[] = [
-                        'key' => $key,
-                        'isNested' => false,
-                        'changeType' => 'changed',
-                        'from' => $array1[$key],
-                        'to' => $array2[$key]
-                    ];
+                    $acc[] = buildArray($key, false, 'changed', $array1[$key], $array2[$key]);
                 }
             }
         } elseif (array_key_exists($key, $array1)) {
             if (is_array($array1[$key])) {
-                $acc[] = [
-                    'key' => $key,
-                    'isNested' => true,
-                    'changeType' => 'removed',
-                    'from' => arraysDiff3($array1[$key], $array1[$key]),
-                    'to' => null
-                ];
+                $acc[] = buildArray($key, true, 'removed', arraysDiff3($array1[$key], $array1[$key]), null);
             } else {
-                $acc[] = [
-                    'key' => $key,
-                    'isNested' => false,
-                    'changeType' => 'removed',
-                    'from' => $array1[$key],
-                    'to' => null
-                ];
+                $acc[] = buildArray($key, false, 'removed', $array1[$key], null);
             }
         } elseif (is_array($array2[$key])) {
-            $acc[] = [
-                'key' => $key,
-                'isNested' => true,
-                'changeType' => 'added',
-                'from' => arraysDiff3($array2[$key], $array2[$key]),
-                'to' => null
-            ];
+            $acc[] = buildArray($key, true, 'added', arraysDiff3($array2[$key], $array2[$key]), null);
         } else {
-            $acc[] = [
-                'key' => $key,
-                'isNested' => false,
-                'changeType' => 'added',
-                'from' => $array2[$key],
-                'to' => null
-            ];
+            $acc[] = buildArray($key, false, 'added', $array2[$key], null);
         }
         return $acc;
     }, []);
+}
+
+
+function buildArray($key, $isNested, $changeType, $from, $to)
+{
+    return [
+        'key'        => $key,
+        'isNested'   => $isNested,
+        'changeType' => $changeType,
+        'from'       => $from,
+        'to'         => $to
+    ];
 }
