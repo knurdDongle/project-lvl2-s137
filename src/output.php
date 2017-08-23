@@ -15,13 +15,13 @@ function boolToText($value)
 
 function buildLine($isNested, $spaces, $mark, $key, $value)
 {
-    $half1 ="$spaces$mark \"{$key}\": ";
+    $half1 ="$spaces$mark \"$key\": ";
 
     if ($isNested) {
         $half2 = "{\n{$value}$spaces  }\n";
     } else {
         $value = boolToText($value);
-        $half2 = ($value !== 'true' && $value !== 'false') ? "\"{$value}\"\n" : "{$value}\n";
+        $half2 = ($value !== 'true' && $value !== 'false') ? "\"$value\"\n" : "$value\n";
     }
 
     return $half1 . $half2;
@@ -46,23 +46,23 @@ function buildLinePlain($changeType, $property, $value1 = '', $value2 = '')
 }
 
 
-function output($AST, $depth = 0)
+function outputPretty($AST, $depth = 0)
 {
     $spaces = str_repeat(' ', $depth * 4 + 2);
 
     $result = array_reduce($AST, function ($acc, $array) use ($spaces, $depth) {
         if ($array['isNested'] === true) {
             if ($array['changeType'] === 'unchanged') {
-                $value = output($array['from'], $depth + 1);
+                $value = outputPretty($array['from'], $depth + 1);
                 $acc .= buildLine(true, $spaces, " ", $array['key'], $value);
             } elseif ($array['changeType'] === 'changed') {
-                $value = output($array['from'], 1);
+                $value = outputPretty($array['from'], 1);
                 $acc .= buildLine(true, $spaces, " ", $array['key'], $value);
             } elseif ($array['changeType'] === 'removed') {
-                $value = output($array['from'], $depth + 1);
+                $value = outputPretty($array['from'], $depth + 1);
                 $acc .= buildLine(true, $spaces, "-", $array['key'], $value);
             } elseif ($array['changeType'] === 'added') {
-                $value = output($array['from'], $depth + 1);
+                $value = outputPretty($array['from'], $depth + 1);
                 $acc .= buildLine(true, $spaces, "+", $array['key'], $value);
             }
         } else {
@@ -110,4 +110,9 @@ function outputPlain($AST, $parents = '')
     }, '');
 
     return $result;
+}
+
+function outputJSON($AST)
+{
+    return json_encode($AST);
 }

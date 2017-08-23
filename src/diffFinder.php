@@ -4,12 +4,17 @@ namespace DiffFinder\diff;
 
 use function \Funct\Collection\union;
 
-function findDiff($array1, $array2)
+function findDiff($array1, $array2, $format)
 {
     $resultArray = arraysDiff($array1, $array2);
 
-//    return $resultArray;
-    return \DiffFinder\output\output($resultArray);
+    if ($format === 'plain') {
+        return \DiffFinder\output\outputPlain($resultArray);
+    } elseif ($format === 'json') {
+        return \DiffFinder\output\outputJSON($resultArray);
+    }
+
+    return "{\n".\DiffFinder\output\outputPretty($resultArray)."}";
 }
 
 

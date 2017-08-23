@@ -22,12 +22,9 @@ DOC;
 
 $args = \Docopt::handle(DOC);
 
-//    foreach ($args as $k=>$v)
-//        echo $k.': '.json_encode($v).PHP_EOL;
-
 if ($args['<firstFile>']) {
     $firstFile = $args['<firstFile>'];
     $secondFile = $args['<secondFile>'];
 
-    \DiffFinder\common\startGenDiff($firstFile, $secondFile);
+    \DiffFinder\common\startGenDiff($firstFile, $secondFile, $args['--format']);
 }
