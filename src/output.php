@@ -146,26 +146,40 @@ function outputPlain($AST, $parents = '')
     foreach ($AST as $array) {
         if ($array['isNested'] === true) {
             if ($array['changeType'] === 'changed') {
-                $value = outputPlain($array['from'], "$parents{$array['key']}.");
-                $result .= "{$value}";
+                $result .= outputPlain($array['from'], "$parents{$array['key']}.");
             } elseif ($array['changeType'] === 'removed') {
-                $result .= "Property '{$parents}{$array['key']}' was removed\n";
+                $result .= buildLinePlain('removed', $parents . $array['key']);
             } elseif ($array['changeType'] === 'added') {
-                $result .= "Property '{$parents}{$array['key']}' was added with value: 'complex value'\n";
+                $result .= buildLinePlain('added', $parents . $array['key'], '"complex value"');
             }
         } else {
             if ($array['changeType'] === 'changed') {
                 $value1 = boolToText($array['from']);
                 $value2 = boolToText($array['to']);
-                $result .= "Property '{$parents}{$array['key']}' was changed. From {$value1} to {$value2}\n";
+                $result .= buildLinePlain('changed', $parents . $array['key'], $value1, $value2);
             } elseif ($array['changeType'] === 'removed') {
-                $result .= "Property '{$parents}{$array['key']}' was removed\n";
+                $result .= buildLinePlain('removed', $parents . $array['key']);
             } elseif ($array['changeType'] === 'added') {
                 $value = boolToText($array['from']);
-                $result .= "Property '{$parents}{$array['key']}' was added with value: {$value}\n";
+                $result .= buildLinePlain('added', $parents . $array['key'], $value);
             }
         }
     }
 
     return "$result";
+}
+
+function buildLinePlain($changeType, $property, $value1 = '', $value2 = '')
+{
+    $line = '';
+
+    if ($changeType === 'removed') {
+        $line = "'$property' was $changeType";
+    } elseif ($changeType === 'added') {
+        $line = "'$property' was $changeType with value: $value1";
+    } elseif ($changeType === 'changed') {
+        $line = "'$property' was $changeType. From $value1 to $value2";
+    }
+
+    return "Property $line\n";
 }

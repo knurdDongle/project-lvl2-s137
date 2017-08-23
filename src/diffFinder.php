@@ -9,7 +9,7 @@ function findDiff($array1, $array2)
     $resultArray = arraysDiff3($array1, $array2);
 
 //    return $resultArray;
-    return \DiffFinder\output\output($resultArray);
+    return \DiffFinder\output\outputPlain($resultArray);
 }
 
 
