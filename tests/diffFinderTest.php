@@ -3,18 +3,21 @@ namespace Diff\Tests;
 
 class DiffFinderTest extends \PHPUnit_Framework_TestCase
 {
+    public $format = 'pretty';
+
     public function testFindDiff()
     {
-        $findDiffResult = '    "host": "hexlet.io"
+        $findDiffResult = '{
+    "host": "hexlet.io"
   - "timeout": "50"
   + "timeout": "20"
   - "proxy": "123.234.53.22"
   + "verbose": true
-';
+}';
         $array1 = ['host' => 'hexlet.io', 'timeout' => 50, 'proxy' => '123.234.53.22'];
         $array2 = ['timeout' => 20, 'verbose' => true, 'host' => 'hexlet.io'];
 
-        $this->assertEquals("$findDiffResult", \DiffFinder\diff\findDiff($array1, $array2));
+        $this->assertEquals("$findDiffResult", \DiffFinder\diff\findDiff($array1, $array2, $this->format));
     }
 
     public function testNestedFindDiff()
@@ -51,7 +54,8 @@ class DiffFinderTest extends \PHPUnit_Framework_TestCase
                 "fee" => "100500"
             ]];
 
-        $findDiffResult = '    "common": {
+        $findDiffResult = '{
+    "common": {
         "setting1": "Value 1"
       - "setting2": "200"
         "setting3": true
@@ -74,8 +78,8 @@ class DiffFinderTest extends \PHPUnit_Framework_TestCase
   + "group3": {
         "fee": "100500"
     }
-';
+}';
 
-        $this->assertEquals("$findDiffResult", \DiffFinder\diff\findDiff($array1, $array2));
+        $this->assertEquals("$findDiffResult", \DiffFinder\diff\findDiff($array1, $array2, $this->format));
     }
 }

@@ -12,6 +12,5 @@ function startGenDiff($file1, $file2, $format)
 
     $result = \DiffFinder\diff\findDiff($fileArray1, $fileArray2, $format);
 
-    print_r("\n{$result}");
-//    print_r($result);
+    echo $result;
 }
