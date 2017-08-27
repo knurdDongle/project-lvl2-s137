@@ -6,7 +6,7 @@ use function \Funct\Collection\union;
 
 function findDiff($array1, $array2, $format)
 {
-    $resultArray = arraysDiff($array1, $array2);
+    $resultArray = buildAST($array1, $array2);
 
     if ($format === 'plain') {
         return \DiffFinder\output\outputPlain($resultArray);
@@ -18,7 +18,7 @@ function findDiff($array1, $array2, $format)
 }
 
 
-function arraysDiff($array1, $array2)
+function buildAST($array1, $array2)
 {
     $unionArraysKeys = union(array_keys($array1), array_keys($array2));
 
@@ -26,39 +26,46 @@ function arraysDiff($array1, $array2)
         if (array_key_exists($key, $array1) && array_key_exists($key, $array2)) {
             if (is_array($array1[$key]) && is_array($array2[$key])) {
                 if ($array1[$key] === $array2[$key]) {
-                    $acc[] = buildArray($key, true, 'unchanged', arraysDiff($array1[$key], $array1[$key]), null);
+                    $acc[] = buildArray($key, 'nested', $array1[$key]);
                 } else {
-                    $acc[] = buildArray($key, true, 'changed', arraysDiff($array1[$key], $array2[$key]), null);
+                    $acc[] = buildArray($key, 'nested', buildAST($array1[$key], $array2[$key]));
                 }
             } else {
                 if ($array1[$key] === $array2[$key]) {
-                    $acc[] = buildArray($key, false, 'unchanged', $array1[$key], null);
+                    $acc[] = buildArray($key, 'unchanged', null, $array1[$key]);
                 } else {
-                    $acc[] = buildArray($key, false, 'changed', $array1[$key], $array2[$key]);
+                    $acc[] = buildArray($key, 'changed', null, $array1[$key], $array2[$key]);
                 }
             }
         } elseif (array_key_exists($key, $array1)) {
             if (is_array($array1[$key])) {
-                $acc[] = buildArray($key, true, 'removed', arraysDiff($array1[$key], $array1[$key]), null);
+                $acc[] = buildArray($key, 'removed', null, $array1[$key]);
             } else {
-                $acc[] = buildArray($key, false, 'removed', $array1[$key], null);
+                $acc[] = buildArray($key, 'removed', null, $array1[$key]);
             }
         } elseif (is_array($array2[$key])) {
-            $acc[] = buildArray($key, true, 'added', arraysDiff($array2[$key], $array2[$key]), null);
+            $acc[] = buildArray($key, 'added', null, $array2[$key]);
         } else {
-            $acc[] = buildArray($key, false, 'added', $array2[$key], null);
+            $acc[] = buildArray($key, 'added', null, $array2[$key]);
         }
         return $acc;
     }, []);
 }
 
 
-function buildArray($key, $isNested, $changeType, $from, $to)
+function buildArray($key, $type, $children, $from = null, $to = null)
 {
+    if ($type === 'nested') {
+        return [
+            'key'        => $key,
+            'type'       => $type,
+            'children'   => $children
+        ];
+    }
+
     return [
         'key'        => $key,
-        'isNested'   => $isNested,
-        'changeType' => $changeType,
+        'type'       => $type,
         'from'       => $from,
         'to'         => $to
     ];

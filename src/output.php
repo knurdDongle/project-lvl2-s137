@@ -2,28 +2,102 @@
 
 namespace DiffFinder\output;
 
-function boolToText($value)
+function outputJSON($AST)
 {
-    if ($value === true) {
-        return 'true';
-    } elseif ($value === false) {
-        return 'false';
-    }
-    return $value;
+    return json_encode($AST);
 }
 
 
-function buildLine($isNested, $spaces, $mark, $key, $value)
+function outputPlain($AST, $parents = '')
 {
+    $result = array_reduce($AST, function ($acc, $array) use ($parents) {
+        if ($array['type'] === 'nested') {
+            $acc .= outputPlain($array['children'], "$parents{$array['key']}.");
+        } else {
+            if ($array['type'] === 'changed') {
+                $acc .= buildLinePlain('changed', $parents . $array['key'], $array['from'], $array['to']);
+            } elseif ($array['type'] === 'removed') {
+                $acc .= buildLinePlain('removed', $parents . $array['key']);
+            } elseif ($array['type'] === 'added') {
+                if (is_array($array['from'])) {
+                    $acc .= buildLinePlain('added', $parents . $array['key'], 'complex value');
+                } else {
+                    $acc .= buildLinePlain('added', $parents . $array['key'], $array['from']);
+                }
+            }
+        }
+
+        return $acc;
+    }, '');
+
+    return $result;
+}
+
+
+function outputPretty($AST, $depth = 0)
+{
+    $result = array_reduce($AST, function ($acc, $array) use ($depth) {
+        if ($array['type'] === 'nested') {
+            $value = outputPretty($array['children'], $depth + 1);
+            $acc .= buildLine(true, " ", $array['key'], $value, $depth);
+        } else {
+            if ($array['type'] === 'unchanged') {
+                $acc .= buildLine(false, " ", $array['key'], $array['from'], $depth);
+            } elseif ($array['type'] === 'changed') {
+                $acc .= buildLine(false, "-", $array['key'], $array['from'], $depth);
+                $acc .= buildLine(false, "+", $array['key'], $array['to'], $depth);
+            } elseif ($array['type'] === 'removed') {
+                $acc .= buildLine(false, "-", $array['key'], $array['from'], $depth);
+            } elseif ($array['type'] === 'added') {
+                $acc .= buildLine(false, "+", $array['key'], $array['from'], $depth);
+            }
+        }
+
+        return $acc;
+    }, '');
+
+    return $result;
+}
+
+
+function boolToText($value)
+{
+    if ($value === true) {
+        return "true\n";
+    } elseif ($value === false) {
+        return "false\n";
+    }
+
+    return "\"$value\"\n";
+}
+
+
+function unpackArray($array)
+{
+    return array_reduce(array_keys($array), function ($acc, $key) use ($array) {
+        $value = boolToText($array[$key]);
+        $acc .= "\"$key\": $value";
+        return $acc;
+    }, '');
+}
+
+
+function buildLine($isNested, $mark, $key, $value, $depth)
+{
+    $spaces = str_repeat(' ', $depth * 4 + 2);
+
     $half1 ="$spaces$mark \"$key\": ";
 
     if ($isNested) {
-        $half2 = "{\n{$value}$spaces  }\n";
+        $half2 = "{\n$value$spaces  }\n";
     } else {
-        $value = boolToText($value);
-        $half2 = ($value !== 'true' && $value !== 'false') ? "\"$value\"\n" : "$value\n";
+        if (!is_array($value)) {
+            $half2 = boolToText($value);
+        } else {
+            $values = unpackArray($value);
+            $half2 = "{\n$spaces      $values  $spaces}\n";
+        }
     }
-
     return $half1 . $half2;
 }
 
@@ -31,8 +105,6 @@ function buildLine($isNested, $spaces, $mark, $key, $value)
 function buildLinePlain($changeType, $property, $value1 = '', $value2 = '')
 {
     $line = '';
-    $value1 = boolToText($value1);
-    $value2 = boolToText($value2);
 
     if ($changeType === 'removed') {
         $line = "'$property' was $changeType";
@@ -43,76 +115,4 @@ function buildLinePlain($changeType, $property, $value1 = '', $value2 = '')
     }
 
     return "Property $line\n";
-}
-
-
-function outputPretty($AST, $depth = 0)
-{
-    $spaces = str_repeat(' ', $depth * 4 + 2);
-
-    $result = array_reduce($AST, function ($acc, $array) use ($spaces, $depth) {
-        if ($array['isNested'] === true) {
-            if ($array['changeType'] === 'unchanged') {
-                $value = outputPretty($array['from'], $depth + 1);
-                $acc .= buildLine(true, $spaces, " ", $array['key'], $value);
-            } elseif ($array['changeType'] === 'changed') {
-                $value = outputPretty($array['from'], 1);
-                $acc .= buildLine(true, $spaces, " ", $array['key'], $value);
-            } elseif ($array['changeType'] === 'removed') {
-                $value = outputPretty($array['from'], $depth + 1);
-                $acc .= buildLine(true, $spaces, "-", $array['key'], $value);
-            } elseif ($array['changeType'] === 'added') {
-                $value = outputPretty($array['from'], $depth + 1);
-                $acc .= buildLine(true, $spaces, "+", $array['key'], $value);
-            }
-        } else {
-            if ($array['changeType'] === 'unchanged') {
-                $acc .= buildLine(false, $spaces, " ", $array['key'], $array['from']);
-            } elseif ($array['changeType'] === 'changed') {
-                $acc .= buildLine(false, $spaces, "-", $array['key'], $array['from']);
-                $acc .= buildLine(false, $spaces, "+", $array['key'], $array['to']);
-            } elseif ($array['changeType'] === 'removed') {
-                $acc .= buildLine(false, $spaces, "-", $array['key'], $array['from']);
-            } elseif ($array['changeType'] === 'added') {
-                $acc .= buildLine(false, $spaces, "+", $array['key'], $array['from']);
-            }
-        }
-
-        return $acc;
-    }, '');
-
-    return $result;
-}
-
-
-function outputPlain($AST, $parents = '')
-{
-    $result = array_reduce($AST, function ($acc, $array) use ($parents) {
-        if ($array['isNested'] === true) {
-            if ($array['changeType'] === 'changed') {
-                $acc .= outputPlain($array['from'], "$parents{$array['key']}.");
-            } elseif ($array['changeType'] === 'removed') {
-                $acc .= buildLinePlain('removed', $parents . $array['key']);
-            } elseif ($array['changeType'] === 'added') {
-                $acc .= buildLinePlain('added', $parents . $array['key'], 'complex value');
-            }
-        } else {
-            if ($array['changeType'] === 'changed') {
-                $acc .= buildLinePlain('changed', $parents . $array['key'], $array['from'], $array['to']);
-            } elseif ($array['changeType'] === 'removed') {
-                $acc .= buildLinePlain('removed', $parents . $array['key']);
-            } elseif ($array['changeType'] === 'added') {
-                $acc .= buildLinePlain('added', $parents . $array['key'], $array['from']);
-            }
-        }
-
-        return $acc;
-    }, '');
-
-    return $result;
-}
-
-function outputJSON($AST)
-{
-    return json_encode($AST);
 }
